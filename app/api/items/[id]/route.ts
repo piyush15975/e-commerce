@@ -12,10 +12,15 @@ export async function GET(
   try {
     await connectDB();
     const item = await Item.findById(id);
+
     if (!item) {
       return NextResponse.json({ error: 'Item not found' }, { status: 404 });
     }
-    return NextResponse.json(item, { status: 200 });
+
+    // ✅ Convert Mongoose Document to plain object
+    const plainItem = item.toObject();
+
+    return NextResponse.json(plainItem, { status: 200 });
   } catch (error) {
     console.error('Get item error:', error);
     return NextResponse.json({ error: 'Internal server error' }, { status: 500 });
@@ -43,7 +48,9 @@ export async function PUT(
     item.image = image || item.image;
 
     await item.save();
-    return NextResponse.json(item, { status: 200 });
+
+    const plainItem = item.toObject(); // ✅ serialize
+    return NextResponse.json(plainItem, { status: 200 });
   } catch (error) {
     console.error('Update item error:', error);
     return NextResponse.json({ error: 'Internal server error' }, { status: 500 });
@@ -61,6 +68,7 @@ export async function DELETE(
     if (!item) {
       return NextResponse.json({ error: 'Item not found' }, { status: 404 });
     }
+
     return NextResponse.json({ message: 'Item deleted' }, { status: 200 });
   } catch (error) {
     console.error('Delete item error:', error);
