@@ -2,10 +2,16 @@ import { NextRequest, NextResponse } from 'next/server';
 import connectDB from '@/lib/db';
 import Item from '@/models/Item';
 
-export async function GET(req: NextRequest, { params }: { params: { id: string } }) {
+type Params = { id: string };
+
+export async function GET(
+  req: NextRequest,
+  context: { params: Params }
+): Promise<NextResponse> {
+  const { id } = context.params;
   try {
     await connectDB();
-    const item = await Item.findById(params.id);
+    const item = await Item.findById(id);
     if (!item) {
       return NextResponse.json({ error: 'Item not found' }, { status: 404 });
     }
@@ -16,12 +22,16 @@ export async function GET(req: NextRequest, { params }: { params: { id: string }
   }
 }
 
-export async function PUT(req: NextRequest, { params }: { params: { id: string } }) {
+export async function PUT(
+  req: NextRequest,
+  context: { params: Params }
+): Promise<NextResponse> {
+  const { id } = context.params;
   try {
     await connectDB();
     const { name, description, price, category, image } = await req.json();
 
-    const item = await Item.findById(params.id);
+    const item = await Item.findById(id);
     if (!item) {
       return NextResponse.json({ error: 'Item not found' }, { status: 404 });
     }
@@ -40,10 +50,14 @@ export async function PUT(req: NextRequest, { params }: { params: { id: string }
   }
 }
 
-export async function DELETE(req: NextRequest, { params }: { params: { id: string } }) {
+export async function DELETE(
+  req: NextRequest,
+  context: { params: Params }
+): Promise<NextResponse> {
+  const { id } = context.params;
   try {
     await connectDB();
-    const item = await Item.findByIdAndDelete(params.id);
+    const item = await Item.findByIdAndDelete(id);
     if (!item) {
       return NextResponse.json({ error: 'Item not found' }, { status: 404 });
     }
